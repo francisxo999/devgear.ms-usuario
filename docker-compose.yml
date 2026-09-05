@@ -1,0 +1,5 @@
+services:
+  app-usuario:
+    build: .
+    ports:
+      - "8083:8083"
