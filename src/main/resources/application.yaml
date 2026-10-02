@@ -1,6 +1,18 @@
 spring:
   application:
     name: ms-usuario
+
+  datasource:
+    url: jdbc:mysql://mysql-usuario:3306/usuario_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
   security:
     oauth2:
       resourceserver:
