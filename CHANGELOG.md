@@ -1,2 +1,1 @@
 * v1.0.0: Inicialización del microservicio de usuarios.
-* v1.1.0: Creación de UsuarioController (registro, consulta, listado, eliminación), entidades JPA, conexión a MySQL, hasheo de contraseñas con BCrypt, y protección de endpoints sensibles con @PreAuthorize(ADMIN).

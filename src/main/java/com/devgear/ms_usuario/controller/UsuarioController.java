@@ -1,51 +1,29 @@
 package com.devgear.ms_usuario.controller;
 
-import com.devgear.ms_usuario.dto.UsuarioRequestDTO;
-import com.devgear.ms_usuario.dto.UsuarioResponseDTO;
-import com.devgear.ms_usuario.service.UsuarioService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/usuarios")
-@RequiredArgsConstructor
-@Tag(name = "Usuarios", description = "API para la gestión de usuarios")
+@RequestMapping("/api/usuario")
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+    @GetMapping("/me")
+    public Map<String, Object> perfil(JwtAuthenticationToken authentication) {
+        Jwt token = authentication.getToken();
 
-    @Operation(summary = "Crear un nuevo usuario (registro)")
-    @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> crearUsuario(@Valid @RequestBody UsuarioRequestDTO request) {
-        return new ResponseEntity<>(usuarioService.crearUsuario(request), HttpStatus.CREATED);
-    }
-
-    @Operation(summary = "Obtener un usuario por ID")
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> obtenerUsuario(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.obtenerPorId(id));
-    }
-
-    @Operation(summary = "Listar todos los usuarios")
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
-        return ResponseEntity.ok(usuarioService.obtenerTodos());
-    }
-
-    @Operation(summary = "Eliminar un usuario por ID")
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
-        usuarioService.eliminarUsuario(id);
-        return ResponseEntity.noContent().build();
+        return Map.of(
+            "oid", token.getClaimAsString("oid"),
+            "nombre", token.getClaimAsString("name"),
+            "correo", token.getClaimAsString("preferred_username"),
+            "roles", token.getClaimAsStringList("roles") != null
+                        ? token.getClaimAsStringList("roles")
+                        : List.of()
+        );
     }
 }
